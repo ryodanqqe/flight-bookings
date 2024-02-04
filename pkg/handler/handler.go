@@ -1,8 +1,17 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+)
 
 type Handler struct {
+}
+
+func NewHandler() *Handler {
+	return &Handler{}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
@@ -10,36 +19,37 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	// TODO: Middleware (logging etc)
 
-	// Swagger route
-
 	auth := router.Group("/auth")
 	{
-		auth.POST("/sign-up")
-		auth.GET("/sign-in")
-		auth.DELETE("/sign-out")
+		auth.POST("/sign-up", h.signUp)
+		auth.GET("/sign-in", h.signIn)
+		auth.DELETE("/sign-out", h.signOut)
 	}
 
 	api := router.Group("/api")
 	{
 		admin := api.Group("/admin")
 		{
-			admin.GET("/flights")
-			admin.GET("/flights/id")
-			admin.POST("/flights/:id")
-			admin.PUT("/flights/:id")
-			admin.DELETE("/flights/:id")
+			admin.GET("/flights", h.getAllFlights)
+			admin.GET("/flights/id", h.getFlight)
+			admin.POST("/flights/:id", h.createFlight)
+			admin.PUT("/flights/:id", h.updateFlight)
+			admin.DELETE("/flights/:id", h.deleteFlight)
 		}
 
 		user := api.Group("user")
 		{
-			user.GET("/flights")
-			user.POST("/flights/:flightID")
-			user.GET("/bookings")
-			user.GET("/bookings/:id")
-			user.PUT("/bookings/:id")
-			user.DELETE("/bookings/:id")
+			user.GET("/flights", getAvailableFlights)
+			user.POST("/book/:flightID", bookTicket)
+			user.GET("/bookings", getUserBookings)
+			user.GET("/bookings/:id", getUserBooking)
+			user.PUT("/bookings/:id", updateUserBooking)
+			user.DELETE("/bookings/:id", deleteUserBooking)
 		}
 	}
+
+	// Setting routes for Swagger
+	router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	return router
 }
