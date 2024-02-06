@@ -1,6 +1,7 @@
+BEGIN;
+
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
--- Создание таблицы Users
 CREATE TABLE Users (
     ID UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     Phone VARCHAR(20),
@@ -10,8 +11,6 @@ CREATE TABLE Users (
     UpdatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Создание таблицы Flights
--- Создание таблицы Flights с UUIDv4 ID
 CREATE TABLE Flights (
     ID UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     StartTime TIMESTAMP NOT NULL,
@@ -31,10 +30,8 @@ CREATE TABLE Flights (
 );
 
 
--- Создание типа ENUM для ранга билета
 CREATE TYPE TicketRank AS ENUM ('Economy', 'Business', 'Deluxe');
 
--- Создание таблицы Tickets с использованием ENUM
 CREATE TABLE Tickets (
     ID UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
     FlightID UUID REFERENCES Flights(ID),
@@ -43,3 +40,5 @@ CREATE TABLE Tickets (
     Price DECIMAL(10, 2) NOT NULL,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+COMMIT;
