@@ -2,16 +2,18 @@ package handler
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/ryodanqqe/flight-bookings/pkg/service"
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 type Handler struct {
+	services *service.Service
 }
 
-func NewHandler() *Handler {
-	return &Handler{}
+func NewHandler(services *service.Service) *Handler {
+	return &Handler{services: services}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
