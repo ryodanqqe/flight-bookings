@@ -8,6 +8,7 @@ import (
 
 type Authorization interface {
 	CreateUser(user models.User) (string, error)
+	GetUser(email, password string) (models.User, error)
 }
 
 type Admin interface {
