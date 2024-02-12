@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,7 @@ func (h *Handler) signUp(c *gin.Context) {
 
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	id, err := h.services.CreateUser(input)
@@ -32,13 +34,14 @@ type signInInput struct {
 }
 
 func (h *Handler) signIn(c *gin.Context) {
-	var input signInInput
+	var signInInput signInInput
 
-	if err := c.BindJSON(&input); err != nil {
+	if err := c.ShouldBindJSON(&signInInput); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
-	token, err := h.services.GenerateToken(input.Email, input.Password)
+	token, err := h.services.GenerateToken(signInInput.Email, signInInput.Password)
 	if err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
@@ -47,6 +50,8 @@ func (h *Handler) signIn(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"token": token,
 	})
+
+	log.Printf("token: ", token)
 }
 
 func (h *Handler) signOut(c *gin.Context) {
