@@ -1,11 +1,15 @@
 package handler
 
 import (
-	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/ryodanqqe/flight-bookings/models"
+)
+
+const (
+	tokenTTL = 12 * time.Hour
 )
 
 func (h *Handler) signUp(c *gin.Context) {
@@ -22,8 +26,8 @@ func (h *Handler) signUp(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
+	c.JSON(http.StatusOK, gin.H{
+		"userID": id,
 	})
 }
 
@@ -47,13 +51,34 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, map[string]interface{}{
+	expiration := time.Now().Add(tokenTTL) // tokenTTL
+	cookie := &http.Cookie{
+		Name:     "token",
+		Value:    token,
+		Expires:  expiration,
+		HttpOnly: true,
+	}
+
+	http.SetCookie(c.Writer, cookie)
+
+	c.JSON(http.StatusOK, gin.H{
 		"token": token,
 	})
 
-	log.Printf("token: ", token)
 }
 
 func (h *Handler) signOut(c *gin.Context) {
+	// Кэшировать в Redis токены, и проверять через него | Сделать отдельной структурой с функциями Add, Contains
 
+	cookie := &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+		Path:     "/",
+	}
+
+	http.SetCookie(c.Writer, cookie)
+
+	c.JSON(http.StatusOK, gin.H{"message": "User signed out"})
 }
