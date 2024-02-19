@@ -31,7 +31,7 @@ func main() {
 
 	repo := repository.NewRepository(db)
 
-	service := service.NewService(*repo)
+	service := service.NewService(repo)
 
 	handler := handler.NewHandler(service)
 

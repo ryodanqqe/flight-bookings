@@ -7,12 +7,6 @@ import (
 	"github.com/ryodanqqe/flight-bookings/models"
 )
 
-const (
-	usersTable   = "users"
-	flightsTable = "flights"
-	ticketsTable = "tickets"
-)
-
 type AuthPostgres struct {
 	db *sql.DB
 }

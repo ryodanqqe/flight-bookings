@@ -32,13 +32,13 @@ func (h *Handler) signUp(c *gin.Context) {
 }
 
 // Можно сделать email/phone
-type signInInput struct {
+type signInput struct {
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
 func (h *Handler) signIn(c *gin.Context) {
-	var signInInput signInInput
+	var signInInput signInput
 
 	if err := c.ShouldBindJSON(&signInInput); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
@@ -51,15 +51,7 @@ func (h *Handler) signIn(c *gin.Context) {
 		return
 	}
 
-	expiration := time.Now().Add(tokenTTL) // tokenTTL
-	cookie := &http.Cookie{
-		Name:     "token",
-		Value:    token,
-		Expires:  expiration,
-		HttpOnly: true,
-	}
-
-	http.SetCookie(c.Writer, cookie)
+	c.SetCookie("token", token, int(tokenTTL.Seconds()), "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"token": token,
@@ -68,9 +60,8 @@ func (h *Handler) signIn(c *gin.Context) {
 }
 
 func (h *Handler) signOut(c *gin.Context) {
-	// Кэшировать в Redis токены, и проверять через него | Сделать отдельной структурой с функциями Add, Contains
 
-	cookie := &http.Cookie{
+	cookie := http.Cookie{
 		Name:     "token",
 		Value:    "",
 		Expires:  time.Unix(0, 0),
@@ -78,7 +69,7 @@ func (h *Handler) signOut(c *gin.Context) {
 		Path:     "/",
 	}
 
-	http.SetCookie(c.Writer, cookie)
+	http.SetCookie(c.Writer, &cookie)
 
 	c.JSON(http.StatusOK, gin.H{"message": "User signed out"})
 }

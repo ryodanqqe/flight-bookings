@@ -17,11 +17,6 @@ const (
 	tokenTTL   = 12 * time.Hour
 )
 
-type tokenClaims struct {
-	jwt.MapClaims
-	UserID string `json: "user_id`
-}
-
 type AuthService struct {
 	repo repository.Authorization
 }
@@ -49,24 +44,20 @@ func (s *AuthService) GenerateToken(email, password string) (string, error) {
 		return "", err
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims{
-		jwt.MapClaims{
-			"exp": time.Now().Add(tokenTTL).Unix(),
-			"iat": time.Now().Unix(),
-		},
-		user.ID,
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"exp":     time.Now().Add(tokenTTL).Unix(),
+		"iat":     time.Now().Unix(),
+		"user_id": user.ID,
 	})
 
 	return token.SignedString([]byte(signingKey))
 }
 
 func (s *AuthService) ParseToken(accessToken string) (string, error) {
-
-	token, err := jwt.ParseWithClaims(accessToken, tokenClaims{}, func(t *jwt.Token) (interface{}, error) {
-		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
+	token, err := jwt.Parse(accessToken, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
-
 		return []byte(signingKey), nil
 	})
 
@@ -74,10 +65,15 @@ func (s *AuthService) ParseToken(accessToken string) (string, error) {
 		return "", err
 	}
 
-	claims, ok := token.Claims.(*tokenClaims)
-	if !ok {
-		return "", errors.New("failed to parse token claims")
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return "", errors.New("invalid token")
 	}
 
-	return claims.UserID, nil
+	userID, ok := claims["user_id"].(string)
+	if !ok {
+		return "", errors.New("invalid user_id claim")
+	}
+
+	return userID, nil
 }

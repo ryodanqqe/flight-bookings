@@ -2,6 +2,7 @@ package service
 
 import (
 	"github.com/ryodanqqe/flight-bookings/models"
+	"github.com/ryodanqqe/flight-bookings/models/requests"
 	"github.com/ryodanqqe/flight-bookings/pkg/repository"
 )
 
@@ -12,6 +13,11 @@ type Authorization interface {
 }
 
 type Admin interface {
+	Create(flight requests.CreateFlightRequest) (string, error)
+	GetOne(id string) (models.Flight, error)
+	GetAll() ([]models.Flight, error)
+	Update(id string, input requests.UpdateFlightRequest) error
+	Delete(id string) error
 }
 
 type User interface {
@@ -23,8 +29,9 @@ type Service struct {
 	User
 }
 
-func NewService(repos repository.Repository) *Service {
+func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
+		Admin:         NewAdminService(repos.Admin),
 	}
 }

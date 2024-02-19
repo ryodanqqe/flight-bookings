@@ -4,19 +4,19 @@ import "time"
 
 type Flight struct {
 	ID                       string    `pg:"type:uuid default:uuid_generate_v4()" json:"id"`
-	StartTime                time.Time `json:"start_time"`
-	EndTime                  time.Time `json:"end_time"`
-	DeparturePoint           string    `json:"departure_point"`
-	Destination              string    `json:"destination"`
-	EconomyPrice             float64   `json:"economy_price"`
-	BusinessPrice            float64   `json:"business_price"`
-	DeluxePrice              float64   `json:"deluxe_price"`
-	TotalEconomyTickets      int       `json:"total_economy_tickets"`
-	TotalBusinessTickets     int       `json:"total_business_tickets"`
-	TotalDeluxeTickets       int       `json:"total_deluxe_tickets"`
-	AvailableEconomyTickets  int       `json:"available_economy_tickets"`
-	AvailableBusinessTickets int       `json:"available_business_tickets"`
-	AvailableDeluxeTickets   int       `json:"available_deluxe_tickets"`
+	StartTime                time.Time `json:"start_time" binding:"required"`
+	EndTime                  time.Time `json:"end_time" binding:"required"`
+	DeparturePoint           string    `json:"departure_point" binding:"required"`
+	Destination              string    `json:"destination" binding:"required"`
+	EconomyPrice             float64   `json:"economy_price" binding:"required"`
+	BusinessPrice            float64   `json:"business_price" binding:"required"`
+	DeluxePrice              float64   `json:"deluxe_price" binding:"required"`
+	TotalEconomyTickets      uint      `json:"total_economy_tickets" binding:"required"`
+	TotalBusinessTickets     uint      `json:"total_business_tickets" binding:"required"`
+	TotalDeluxeTickets       uint      `json:"total_deluxe_tickets" binding:"required"`
+	AvailableEconomyTickets  uint      `json:"available_economy_tickets" binding:"required"`
+	AvailableBusinessTickets uint      `json:"available_business_tickets" binding:"required"`
+	AvailableDeluxeTickets   uint      `json:"available_deluxe_tickets" binding:"required"`
 	CreatedAt                time.Time `json:"created_at"`
 }
 

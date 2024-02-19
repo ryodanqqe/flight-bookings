@@ -32,9 +32,9 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	{
 		admin := api.Group("/admin")
 		{
+			admin.POST("/flights", h.createFlight)
 			admin.GET("/flights", h.getAllFlights)
-			admin.GET("/flights/id", h.getFlight)
-			admin.POST("/flights/:id", h.createFlight)
+			admin.GET("/flights/:id", h.getFlight)
 			admin.PUT("/flights/:id", h.updateFlight)
 			admin.DELETE("/flights/:id", h.deleteFlight)
 		}

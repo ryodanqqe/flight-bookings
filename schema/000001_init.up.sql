@@ -17,17 +17,18 @@ CREATE TABLE Flights (
     EndTime TIMESTAMP NOT NULL,
     DeparturePoint VARCHAR(255) NOT NULL,
     Destination VARCHAR(255) NOT NULL,
-    EconomyPrice DECIMAL(10, 2) NOT NULL,
-    BusinessPrice DECIMAL(10, 2) NOT NULL,
-    DeluxePrice DECIMAL(10, 2) NOT NULL,
-    TotalEconomyTickets INT NOT NULL,
-    TotalBusinessTickets INT NOT NULL,
-    TotalDeluxeTickets INT NOT NULL,
-    AvailableEconomyTickets INT NOT NULL,
-    AvailableBusinessTickets INT NOT NULL,
-    AvailableDeluxeTickets INT NOT NULL,
+    EconomyPrice DECIMAL(10, 2) CHECK (EconomyPrice >= 0) NOT NULL,
+    BusinessPrice DECIMAL(10, 2) CHECK (BusinessPrice >= 0) NOT NULL,
+    DeluxePrice DECIMAL(10, 2) CHECK (DeluxePrice >= 0) NOT NULL,
+    TotalEconomyTickets INT CHECK (TotalEconomyTickets >= 0) NOT NULL,
+    TotalBusinessTickets INT CHECK (TotalBusinessTickets >= 0) NOT NULL,
+    TotalDeluxeTickets INT CHECK (TotalDeluxeTickets >= 0) NOT NULL,
+    AvailableEconomyTickets INT CHECK (AvailableEconomyTickets >= 0) NOT NULL,
+    AvailableBusinessTickets INT CHECK (AvailableBusinessTickets >= 0) NOT NULL,
+    AvailableDeluxeTickets INT CHECK (AvailableDeluxeTickets >= 0) NOT NULL,
     CreatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
 
 
 CREATE TYPE TicketRank AS ENUM ('Economy', 'Business', 'Deluxe');
