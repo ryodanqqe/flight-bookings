@@ -21,7 +21,6 @@ func (r *AuthPostgres) CreateUser(user models.User) (string, error) {
 	query := `INSERT INTO Users (phone, email, password) values ($1, $2, $3) RETURNING ID`
 
 	if err := r.db.QueryRow(query, user.Phone, user.Email, user.Password).Scan(&id); err != nil {
-
 		return "", err
 	}
 

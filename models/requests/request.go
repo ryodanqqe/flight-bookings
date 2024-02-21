@@ -33,3 +33,14 @@ type UpdateFlightRequest struct {
 	AvailableBusinessTickets uint      `json:"available_business_tickets" binding:"required"`
 	AvailableDeluxeTickets   uint      `json:"available_deluxe_tickets" binding:"required"`
 }
+
+type UpdateUserRequest struct {
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Phone    string `json:"phone" binding:"required"`
+}
+
+type BookTicketRequest struct {
+	FlightID string `json:"flight_id" binding:"required"`
+	Rank     string `json:"rank" binding:"required"`
+}

@@ -21,6 +21,14 @@ type Admin interface {
 }
 
 type User interface {
+	BeginTransaction() (*sql.Tx, error)
+	CommitTransaction(tx *sql.Tx) error
+	Rollback(tx *sql.Tx) error
+	UpdateUser(id string, req requests.UpdateUserRequest) error
+	DeleteUser(id string) error
+	CheckAvailableTickets(tx *sql.Tx, req requests.BookTicketRequest, query string) (bool, error)
+	BookTicket(tx *sql.Tx, query, userID string, req requests.BookTicketRequest) (string, error)
+	UpdateAvailableTickets(tx *sql.Tx, query string, req requests.BookTicketRequest) error
 }
 
 type Repository struct {
@@ -33,5 +41,6 @@ func NewRepository(db *sql.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthPostgres(db),
 		Admin:         NewAdminPostgres(db),
+		User:          NewUserPostgres(db),
 	}
 }

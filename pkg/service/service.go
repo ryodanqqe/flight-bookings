@@ -16,11 +16,14 @@ type Admin interface {
 	Create(flight requests.CreateFlightRequest) (string, error)
 	GetOne(id string) (models.Flight, error)
 	GetAll() ([]models.Flight, error)
-	Update(id string, input requests.UpdateFlightRequest) error
+	Update(id string, req requests.UpdateFlightRequest) error
 	Delete(id string) error
 }
 
 type User interface {
+	UpdateUser(id string, req requests.UpdateUserRequest) error
+	DeleteUser(id string) error
+	BookTicket(userID string, req requests.BookTicketRequest) (string, error)
 }
 
 type Service struct {
@@ -33,5 +36,6 @@ func NewService(repos *repository.Repository) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
 		Admin:         NewAdminService(repos.Admin),
+		User:          NewUserService(repos.User),
 	}
 }

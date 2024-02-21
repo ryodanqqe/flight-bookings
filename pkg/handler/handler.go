@@ -41,12 +41,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 		user := api.Group("user")
 		{
-			user.GET("/flights", getAvailableFlights)
-			user.POST("/book/:flightID", bookTicket)
-			user.GET("/bookings", getUserBookings)
-			user.GET("/bookings/:id", getUserBooking)
-			user.PUT("/bookings/:id", updateUserBooking)
-			user.DELETE("/bookings/:id", deleteUserBooking)
+			user.PUT("/account/:id", h.updateUser)
+			user.DELETE("/account/:id", h.deleteUser)
+			user.GET("/flights", h.getAvailableFlights)
+			user.POST("/book/:flightID", h.bookTicket)
+			user.GET("/bookings", h.getUserBookings)
+			user.GET("/bookings/:id", h.getUserBooking)
+			user.PUT("/bookings/:id", h.updateUserBooking)
+			user.DELETE("/bookings/:id", h.deleteUserBooking)
 		}
 	}
 

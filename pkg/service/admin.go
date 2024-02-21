@@ -26,8 +26,8 @@ func (s *AdminService) GetAll() ([]models.Flight, error) {
 	return s.repo.GetAll()
 }
 
-func (s *AdminService) Update(id string, input requests.UpdateFlightRequest) error {
-	return s.repo.Update(id, input)
+func (s *AdminService) Update(id string, req requests.UpdateFlightRequest) error {
+	return s.repo.Update(id, req)
 }
 
 func (s *AdminService) Delete(id string) error {
