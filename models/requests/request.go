@@ -44,3 +44,7 @@ type BookTicketRequest struct {
 	FlightID string `json:"flight_id" binding:"required"`
 	Rank     string `json:"rank" binding:"required"`
 }
+
+type UpdateUserBookingRequest struct {
+	NewUserID string `json:"new_user_id"`
+}

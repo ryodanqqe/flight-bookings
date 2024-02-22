@@ -24,6 +24,10 @@ type User interface {
 	UpdateUser(id string, req requests.UpdateUserRequest) error
 	DeleteUser(id string) error
 	BookTicket(userID string, req requests.BookTicketRequest) (string, error)
+	GetUserBookings(userID string) ([]models.Ticket, error)
+	GetOneUserBooking(ticketID string) (models.Ticket, error)
+	UpdateUserBooking(ticketID string, req requests.UpdateUserBookingRequest) error
+	DeleteUserBooking(ticketID string) error
 }
 
 type Service struct {

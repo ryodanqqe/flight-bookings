@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"strings"
+	"time"
 
+	"github.com/ryodanqqe/flight-bookings/models"
 	"github.com/ryodanqqe/flight-bookings/models/requests"
 	"github.com/ryodanqqe/flight-bookings/pkg/repository"
 )
@@ -27,6 +29,11 @@ func (s *UserService) DeleteUser(id string) error {
 }
 
 func (s *UserService) BookTicket(userID string, req requests.BookTicketRequest) (string, error) {
+
+	departureTime, err := s.repo.GetStartTime(req.FlightID)
+	if departureTime.Sub(time.Now()) <= 2*time.Hour {
+		return "", errors.New("booking is not allowed less than 2 hours before departure")
+	}
 
 	ok := validateRank(req.Rank)
 	if !ok {
@@ -67,7 +74,7 @@ func (s *UserService) BookTicket(userID string, req requests.BookTicketRequest) 
 
 	// Обновление количества доступных билетов (Available -1)
 	updateQuery := getQueryForRank(req.Rank, "update")
-	if err := s.repo.UpdateAvailableTickets(tx, updateQuery, req); err != nil {
+	if err := s.repo.UpdateAvailableTickets(tx, updateQuery, req.FlightID); err != nil {
 		return "", err
 	}
 
@@ -78,7 +85,54 @@ func (s *UserService) BookTicket(userID string, req requests.BookTicketRequest) 
 	return ticketID, nil
 }
 
-// return check, reserve, update
+func (s *UserService) GetUserBookings(userID string) ([]models.Ticket, error) {
+	return s.repo.GetUserBookings(userID)
+}
+
+func (s *UserService) GetOneUserBooking(ticketID string) (models.Ticket, error) {
+	return s.repo.GetOneUserBooking(ticketID)
+}
+
+func (s *UserService) UpdateUserBooking(ticketID string, req requests.UpdateUserBookingRequest) error {
+	return s.repo.UpdateUserBooking(ticketID, req)
+}
+
+func (s *UserService) DeleteUserBooking(ticketID string) error {
+
+	tx, err := s.repo.BeginTransaction()
+	if err != nil {
+		return err
+	}
+
+	defer func() {
+		if err != nil {
+			if rollbackErr := s.repo.Rollback(tx); rollbackErr != nil {
+				log.Printf("error rolling back transaction: %v", rollbackErr)
+			}
+		}
+	}()
+
+	flightID, rank, err := s.repo.GetFlightIDAndRank(tx, ticketID)
+	if err != nil {
+		return err
+	}
+
+	if err := s.repo.DeleteUserBooking(ticketID); err != nil {
+		return err
+	}
+
+	updateQuery := fmt.Sprintf("UPDATE flights SET Available%sTickets = Available%sTickets + 1 WHERE ID = $1", rank, rank)
+	if err := s.repo.UpdateAvailableTickets(tx, updateQuery, flightID); err != nil {
+		return err
+	}
+
+	if err := s.repo.CommitTransaction(tx); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func getQueryForRank(rank string, operation string) string {
 	switch operation {
 	case "check":

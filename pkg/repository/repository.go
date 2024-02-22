@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"time"
 
 	"github.com/ryodanqqe/flight-bookings/models"
 	"github.com/ryodanqqe/flight-bookings/models/requests"
@@ -28,7 +29,13 @@ type User interface {
 	DeleteUser(id string) error
 	CheckAvailableTickets(tx *sql.Tx, req requests.BookTicketRequest, query string) (bool, error)
 	BookTicket(tx *sql.Tx, query, userID string, req requests.BookTicketRequest) (string, error)
-	UpdateAvailableTickets(tx *sql.Tx, query string, req requests.BookTicketRequest) error
+	UpdateAvailableTickets(tx *sql.Tx, query, flightID string) error
+	GetStartTime(flightID string) (time.Time, error)
+	GetUserBookings(userID string) ([]models.Ticket, error)
+	GetOneUserBooking(ticketID string) (models.Ticket, error)
+	UpdateUserBooking(ticketID string, req requests.UpdateUserBookingRequest) error
+	DeleteUserBooking(ticketID string) error
+	GetFlightIDAndRank(tx *sql.Tx, ticketID string) (string, string, error)
 }
 
 type Repository struct {

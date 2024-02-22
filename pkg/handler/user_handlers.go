@@ -37,22 +37,82 @@ func (h *Handler) bookTicket(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, ticketID)
+	c.JSON(http.StatusOK, gin.H{"ticket_id": ticketID})
 }
 
 func (h *Handler) getUserBookings(c *gin.Context) {
 
+	userID, err := h.getUserID(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	tickets, err := h.services.GetUserBookings(userID)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, tickets)
 }
 
 func (h *Handler) getUserBooking(c *gin.Context) {
 
+	ticketID := c.Param("id")
+
+	if ticketID == "" {
+        newErrorResponse(c, http.StatusBadRequest, "Ticket ID is required")
+        return
+    }
+
+	ticket, err := h.services.GetOneUserBooking(ticketID)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, ticket)
 }
 
+// Для передачи билета другому пользователю
 func (h *Handler) updateUserBooking(c *gin.Context) {
+	var input requests.UpdateUserBookingRequest
 
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ticketID := c.Param("id")
+	if ticketID == "" {
+        newErrorResponse(c, http.StatusBadRequest, "Ticket ID is required")
+        return
+    }
+
+	if err := h.services.UpdateUserBooking(ticketID, input); err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, statusResponse{"ok"})
 }
 
+// Flights (AvailableTickets +1)
 func (h *Handler) deleteUserBooking(c *gin.Context) {
+
+	ticketID := c.Param("id")
+	if ticketID == "" {
+        newErrorResponse(c, http.StatusBadRequest, "Ticket ID is required")
+        return
+    }
+
+	if err := h.services.DeleteUserBooking(ticketID); err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, statusResponse{"ok"})
 
 }
 
@@ -65,6 +125,10 @@ func (h *Handler) updateUser(c *gin.Context) {
 	}
 
 	id := c.Param("id")
+	if id == "" {
+        newErrorResponse(c, http.StatusBadRequest, "ID is required")
+        return
+    }
 
 	if err := h.services.UpdateUser(id, input); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
@@ -76,6 +140,10 @@ func (h *Handler) updateUser(c *gin.Context) {
 
 func (h *Handler) deleteUser(c *gin.Context) {
 	id := c.Param("id")
+	if id == "" {
+        newErrorResponse(c, http.StatusBadRequest, "ID is required")
+        return
+    }
 
 	if err := h.services.DeleteUser(id); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
