@@ -26,9 +26,10 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		auth.POST("/sign-out", h.signOut)
 	}
 
-	api := router.Group("/api", h.userIdentity)
+	api := router.Group("/api")
 	{
 		admin := api.Group("/admin")
+		admin.Use(h.adminIdentity)
 		{
 			admin.POST("/flights", h.createFlight)
 			admin.GET("/flights", h.getAllFlights)
@@ -38,6 +39,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		}
 
 		user := api.Group("user")
+		user.Use(h.userIdentity)
 		{
 			user.PUT("/account/:id", h.updateUser)
 			user.DELETE("/account/:id", h.deleteUser)
