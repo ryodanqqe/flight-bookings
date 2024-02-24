@@ -1,8 +1,13 @@
 package main
 
 import (
-	"log"
+	"context"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
+	"github.com/ryodanqqe/flight-bookings/cmd/server"
 	"github.com/ryodanqqe/flight-bookings/pkg/handler"
 	"github.com/ryodanqqe/flight-bookings/pkg/repository"
 	"github.com/ryodanqqe/flight-bookings/pkg/service"
@@ -35,17 +40,31 @@ func main() {
 
 	handler := handler.NewHandler(service)
 
-	// go func() {
-	// 	if err := handler.InitRoutes().Run("localhost:8080"); err != nil {
-	// 		logrus.Fatalf("Failed to run HTTP server: %v", err)
-	// 	}
-	// }()
+	srv := new(server.Server)
+	go func() {
+		if err := srv.Run(viper.GetString("port"), handler.InitRoutes()); err != nil {
+			logrus.Fatalf("error occured while running server")
+		}
+	}()
+	logrus.Printf("Server Started")
 
-	if err := handler.InitRoutes().Run("localhost:8080"); err != nil {
-		logrus.Fatalf("Failed to run HTTP server: %v", err)
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+
+	<-quit
+	logrus.Printf("Shutdown Server ...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := srv.Shutdown(ctx); err != nil {
+		logrus.Errorf("error occurred during server shutdown: %s", err.Error())
 	}
 
-	log.Print("running server")
+	if err := db.Close(); err != nil {
+		logrus.Errorf("error occurred on db connection close: %s", err.Error())
+	}
+
 }
 
 func InitConfig() error {
