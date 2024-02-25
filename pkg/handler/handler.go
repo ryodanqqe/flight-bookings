@@ -6,6 +6,8 @@ import (
 
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+
+	_ "github.com/ryodanqqe/flight-bookings/docs"
 )
 
 type Handler struct {

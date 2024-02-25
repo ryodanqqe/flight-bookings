@@ -1,0 +1,820 @@
+basePath: /
+definitions:
+  handler.errorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  handler.signInput:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  handler.statusResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  models.Flight:
+    properties:
+      available_business_tickets:
+        type: integer
+      available_deluxe_tickets:
+        type: integer
+      available_economy_tickets:
+        type: integer
+      business_price:
+        type: number
+      created_at:
+        type: string
+      deluxe_price:
+        type: number
+      departure_point:
+        type: string
+      destination:
+        type: string
+      economy_price:
+        type: number
+      end_time:
+        type: string
+      id:
+        type: string
+      start_time:
+        type: string
+      total_business_tickets:
+        type: integer
+      total_deluxe_tickets:
+        type: integer
+      total_economy_tickets:
+        type: integer
+    required:
+    - available_business_tickets
+    - available_deluxe_tickets
+    - available_economy_tickets
+    - business_price
+    - deluxe_price
+    - departure_point
+    - destination
+    - economy_price
+    - end_time
+    - start_time
+    - total_business_tickets
+    - total_deluxe_tickets
+    - total_economy_tickets
+    type: object
+  models.Ticket:
+    properties:
+      created_at:
+        type: string
+      flight_id:
+        type: string
+      id:
+        type: string
+      price:
+        type: number
+      rank:
+        type: string
+      user_id:
+        type: string
+    type: object
+  models.User:
+    properties:
+      created_at:
+        type: string
+      email:
+        type: string
+      id:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+      updated_at:
+        type: string
+    required:
+    - email
+    - password
+    type: object
+  requests.BookTicketRequest:
+    properties:
+      flight_id:
+        type: string
+      rank:
+        type: string
+    required:
+    - flight_id
+    - rank
+    type: object
+  requests.CreateFlightRequest:
+    properties:
+      available_business_tickets:
+        type: integer
+      available_deluxe_tickets:
+        type: integer
+      available_economy_tickets:
+        type: integer
+      business_price:
+        type: number
+      deluxe_price:
+        type: number
+      departure_point:
+        type: string
+      destination:
+        type: string
+      economy_price:
+        type: number
+      end_time:
+        type: string
+      start_time:
+        type: string
+      total_business_tickets:
+        type: integer
+      total_deluxe_tickets:
+        type: integer
+      total_economy_tickets:
+        type: integer
+    required:
+    - available_business_tickets
+    - available_deluxe_tickets
+    - available_economy_tickets
+    - business_price
+    - deluxe_price
+    - departure_point
+    - destination
+    - economy_price
+    - end_time
+    - start_time
+    - total_business_tickets
+    - total_deluxe_tickets
+    - total_economy_tickets
+    type: object
+  requests.UpdateFlightRequest:
+    properties:
+      available_business_tickets:
+        type: integer
+      available_deluxe_tickets:
+        type: integer
+      available_economy_tickets:
+        type: integer
+      business_price:
+        type: number
+      deluxe_price:
+        type: number
+      departure_point:
+        type: string
+      destination:
+        type: string
+      economy_price:
+        type: number
+      end_time:
+        type: string
+      start_time:
+        type: string
+      total_business_tickets:
+        type: integer
+      total_deluxe_tickets:
+        type: integer
+      total_economy_tickets:
+        type: integer
+    required:
+    - available_business_tickets
+    - available_deluxe_tickets
+    - available_economy_tickets
+    - business_price
+    - deluxe_price
+    - departure_point
+    - destination
+    - economy_price
+    - end_time
+    - start_time
+    - total_business_tickets
+    - total_deluxe_tickets
+    - total_economy_tickets
+    type: object
+  requests.UpdateUserBookingRequest:
+    properties:
+      new_user_id:
+        type: string
+    type: object
+  requests.UpdateUserRequest:
+    properties:
+      email:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    required:
+    - email
+    - password
+    - phone
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API Server for Flight Bookings
+  title: Flight Bookings
+  version: "1.0"
+paths:
+  /api/admin/flights:
+    get:
+      description: Retrieve a list of all flights
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Secret key
+        in: header
+        name: secretKey
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Flight'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get all flights
+      tags:
+      - Admin
+    post:
+      consumes:
+      - application/json
+      description: Create a new flight based on the provided data
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Secret key
+        in: header
+        name: secretKey
+        required: true
+        type: string
+      - description: Flight data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.CreateFlightRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: id
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Create a new flight
+      tags:
+      - Admin
+  /api/admin/flights/{id}:
+    delete:
+      description: Delete a flight by its ID
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Secret key
+        in: header
+        name: secretKey
+        required: true
+        type: string
+      - description: Flight ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.statusResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Delete a flight
+      tags:
+      - Admin
+    get:
+      description: Retrieve flight by its ID
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Secret key
+        in: header
+        name: secretKey
+        required: true
+        type: string
+      - description: Flight ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Flight'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get a flight by ID
+      tags:
+      - Admin
+    put:
+      consumes:
+      - application/json
+      description: Update information about a flight based on the provided data
+      parameters:
+      - description: Flight ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Secret key
+        in: header
+        name: secretKey
+        required: true
+        type: string
+      - description: Updated flight data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateFlightRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.statusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Update a flight
+      tags:
+      - Admin
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: Login
+      operationId: login
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/handler.signInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: token
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: SignIn
+      tags:
+      - Auth
+  /auth/sign-out:
+    post:
+      consumes:
+      - application/json
+      description: Signout
+      operationId: signout
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User successfully signed out
+          schema:
+            type: string
+      summary: SignOut
+      tags:
+      - Auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: Create Account
+      operationId: create-account
+      parameters:
+      - description: userID
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: userID
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: SignUp
+      tags:
+      - Auth
+  /user/account/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete the user account
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.statusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Delete a user
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      description: Update information about the user
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.statusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Update a user
+      tags:
+      - User
+  /user/bookings:
+    get:
+      description: Retrieve a list of bookings made by the user
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Ticket'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get user bookings
+      tags:
+      - User
+  /user/bookings/{id}:
+    delete:
+      description: Delete a booking made by the user
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.statusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Delete a user booking
+      tags:
+      - User
+    get:
+      description: Retrieve information about a specific booking made by the user
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Ticket'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get a user booking by ID
+      tags:
+      - User
+    put:
+      consumes:
+      - application/json
+      description: Update information about a booking made by the user
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Booking ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated booking data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.UpdateUserBookingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.statusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Update a user booking
+      tags:
+      - User
+  /user/bookings/book:
+    post:
+      consumes:
+      - application/json
+      description: Book a ticket for a flight
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      - description: Ticket booking request data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/requests.BookTicketRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ticket_id
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Book a ticket
+      tags:
+      - User
+  /user/flights:
+    get:
+      description: Retrieve a list of available flights
+      parameters:
+      - description: JWT token
+        in: header
+        name: token
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Flight'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      summary: Get available flights
+      tags:
+      - User
+swagger: "2.0"

@@ -15,6 +15,15 @@ import (
 	"github.com/spf13/viper"
 )
 
+// @title Flight Bookings
+// @version 1.0
+// @description API Server for Flight Bookings
+
+// @host localhost:8080
+// @BasePath /
+
+// @CookieParam token string true "JWT token"
+// @CookieParam secretKey string true "Secret Key"
 func main() {
 	logrus.SetFormatter(new(logrus.JSONFormatter))
 

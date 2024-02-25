@@ -36,7 +36,7 @@ type Service struct {
 	User
 }
 
-func NewService(repos *repository.Repository) *Service {
+func NewService(repos *repository.Repository, cache ) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
 		Admin:         NewAdminService(repos.Admin),

@@ -12,6 +12,18 @@ const (
 	tokenTTL = 12 * time.Hour
 )
 
+// @Summary SignUp
+// @Tags Auth
+// @Description Create Account
+// @ID create-account
+// @Accept  json
+// @Produce  json
+// @Param input body models.User true "userID"
+// @Success 200 {string} string "userID"
+// @Failure 400,404 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /auth/sign-up [post]
 func (h *Handler) signUp(c *gin.Context) {
 	var input models.User
 
@@ -37,6 +49,18 @@ type signInput struct {
 	Password string `json:"password" binding:"required"`
 }
 
+// @Summary SignIn
+// @Tags Auth
+// @Description Login
+// @ID login
+// @Accept  json
+// @Produce  json
+// @Param input body signInput true "credentials"
+// @Success 200 {string} string "token"
+// @Failure 400,404 {object} errorResponse
+// @Failure 500 {object} errorResponse
+// @Failure default {object} errorResponse
+// @Router /auth/sign-in [post]
 func (h *Handler) signIn(c *gin.Context) {
 	var signInInput signInput
 
@@ -59,6 +83,14 @@ func (h *Handler) signIn(c *gin.Context) {
 
 }
 
+// @Summary SignOut
+// @Tags Auth
+// @Description Signout
+// @ID signout
+// @Accept  json
+// @Produce  json
+// @Success 200 {string} string "User successfully signed out"
+// @Router /auth/sign-out [post]
 func (h *Handler) signOut(c *gin.Context) {
 
 	cookie := http.Cookie{
@@ -71,5 +103,5 @@ func (h *Handler) signOut(c *gin.Context) {
 
 	http.SetCookie(c.Writer, &cookie)
 
-	c.JSON(http.StatusOK, gin.H{"message": "User signed out"})
+	c.JSON(http.StatusOK, gin.H{"message": "User successfully signed out"})
 }
