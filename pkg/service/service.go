@@ -7,6 +7,8 @@ import (
 	"github.com/ryodanqqe/flight-bookings/pkg/repository"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go
+
 type Authorization interface {
 	CreateUser(user models.User) (string, error)
 	GenerateToken(email, password string) (string, error)
