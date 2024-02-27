@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/ryodanqqe/flight-bookings/cmd/server"
+	"github.com/ryodanqqe/flight-bookings/pkg/cache"
 	"github.com/ryodanqqe/flight-bookings/pkg/handler"
 	"github.com/ryodanqqe/flight-bookings/pkg/repository"
 	"github.com/ryodanqqe/flight-bookings/pkg/service"
@@ -43,9 +44,21 @@ func main() {
 		logrus.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
+	client, err := cache.NewRedisClient(cache.RedisConfig{
+		Host:     "localhost",
+		Port:     "6379",
+		Password: "",
+		DB:       1,
+	})
+	if err != nil {
+		logrus.Fatalf("failed to initialize redis client: %s", err.Error())
+	}
+
+	cache := cache.NewCache(client)
+
 	repo := repository.NewRepository(db)
 
-	service := service.NewService(repo)
+	service := service.NewService(repo, cache)
 
 	handler := handler.NewHandler(service)
 

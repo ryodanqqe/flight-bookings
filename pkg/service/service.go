@@ -3,6 +3,7 @@ package service
 import (
 	"github.com/ryodanqqe/flight-bookings/models"
 	"github.com/ryodanqqe/flight-bookings/models/requests"
+	"github.com/ryodanqqe/flight-bookings/pkg/cache"
 	"github.com/ryodanqqe/flight-bookings/pkg/repository"
 )
 
@@ -36,10 +37,10 @@ type Service struct {
 	User
 }
 
-func NewService(repos *repository.Repository, cache ) *Service {
+func NewService(repos *repository.Repository, cache *cache.Cache) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization),
-		Admin:         NewAdminService(repos.Admin),
+		Admin:         NewAdminService(repos.Admin, cache.Admin),
 		User:          NewUserService(repos.User),
 	}
 }
