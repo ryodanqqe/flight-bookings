@@ -7,14 +7,18 @@ lint:
 create-migration:
 	migrate create -ext sql -dir schema/ -seq $(NAME)
 
+.PHONY: migrate-up
 migrate-up:
-	migrate -path ./schema -database "postgresql://postgres:password@localhost:5437/postgres?sslmode=disable" -verbose up
+	migrate -path ./schema -database "postgresql://postgres:password@postgres:5437/postgres?sslmode=disable" -verbose up
 
+.PHONY: migrate-down
 migrate-down:
-	migrate -path ./schema -database "postgresql://postgres:password@0.0.0.0:5437/postgres?sslmode=disable"  -verbose down
+	migrate -path ./schema -database "postgresql://postgres:password@postgres:5437/postgres?sslmode=disable"  -verbose down
 
-migrate-fix: 
-	migrate -path ./schema -database "postgresql://postgres:password@0.0.0.0:5437/postgres?sslmode=disable"  force $(VERSION)
+.PHONY: migrate-fix
+migrate-fix: Ц
+	migrate -path ./schema -database "postgresql://postgres:password@postgres:5437/postgres?sslmode=disable"  force $(VERSION)
 
+.PHONY: clean-migration
 clean-migration:
-	del /Q schema\$(FILENAME)
+	rm -f schema/$(FILENAME)

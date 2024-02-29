@@ -4,6 +4,9 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/golang-migrate/migrate/v4"
+	"github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	_ "github.com/lib/pq"
 )
 
@@ -23,8 +26,23 @@ func NewPostgresDB(cfg Config) (*sql.DB, error) {
 		return nil, err
 	}
 
-	err = db.Ping()
+	driver, err := postgres.WithInstance(db, &postgres.Config{})
 	if err != nil {
+		fmt.Println("failed to create database driver instance:", err)
+		return nil, err
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
+		"file://schema",
+		"postgres", driver)
+
+	if err != nil {
+		fmt.Println("failed to initialize migration:", err)
+		return nil, err
+	}
+
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		fmt.Println("failed to apply migrations:", err)
 		return nil, err
 	}
 

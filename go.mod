@@ -50,6 +50,7 @@ require (
 	github.com/go-playground/validator/v10 v10.18.0 // indirect
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/goccy/go-json v0.10.2 // indirect
+	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/google/uuid v1.6.0
 	github.com/josharian/intern v1.0.0 // indirect
