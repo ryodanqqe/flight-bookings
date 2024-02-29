@@ -7,10 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const (
-	authorizationHeader = "Authorization"
-)
-
 func (h *Handler) userIdentity(c *gin.Context) {
 
 	cookie, err := c.Cookie("token")

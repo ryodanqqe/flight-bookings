@@ -45,10 +45,10 @@ func main() {
 	}
 
 	client, err := cache.NewRedisClient(cache.RedisConfig{
-		Host:     "localhost",
-		Port:     "6379",
-		Password: "",
-		DB:       1,
+		Host:     viper.GetString("redis.host"),
+		Port:     viper.GetString("redis.port"),
+		Password: viper.GetString("redis.password"),
+		DB:       viper.GetInt("redis.db"),
 	})
 	if err != nil {
 		logrus.Fatalf("failed to initialize redis client: %s", err.Error())
@@ -70,7 +70,7 @@ func main() {
 	}()
 	logrus.Printf("Server Started")
 
-	quit := make(chan os.Signal)
+	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	<-quit

@@ -7,3 +7,9 @@ db:
   password: "password"
   dbname: "postgres"
   sslmode: "disable"
+
+redis:
+  host: "localhost"
+  port: "6379"
+  password: ""
+  db: 1

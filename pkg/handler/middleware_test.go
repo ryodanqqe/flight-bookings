@@ -90,3 +90,7 @@ func TestHandler_userIdentity(t *testing.T) {
 		})
 	}
 }
+
+// docker run -d --name flight-booking -e POSTGRES_PASSWORD='password' -p 5436:5432 -d --rm postgres
+
+// docker run -d --name my-redis-container -p 6379:6379 --rm redis
